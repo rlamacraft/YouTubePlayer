@@ -1,22 +1,10 @@
-
-function getUrlArgs() {
-    const args = {};
-    window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
-				 (m,k,v) => {
-				     args[k] = decodeURIComponent(v);
-				     return m;
-				 }
-				);
-    return args;
-}
-
-var player;
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player('player-container', {
-    height: '390',
-    width: '640',
-    videoId: getUrlArgs()['v']
-  });
-}
-
-document.getElementsByTagName('h1')[0].innerHTML = getUrlArgs()['t'];
+const urlArgs = Object.fromEntries([...window.location.href.matchAll(/[?&]+(?<a>[^=&]+)=(?<b>[^&]*)/gi)]
+			 .map(list => list
+			      .map(elem => decodeURIComponent(elem)))
+			 .map(([_,...rest]) => rest));
+document
+    .getElementsByTagName('iframe')[0]
+    .setAttribute('src',`https://www.youtube-nocookie.com/embed/${/.*watch\?v=(.*)/.exec(urlArgs['v'])[1]}`);
+document
+    .getElementsByTagName('h1')[0]
+    .innerHTML = urlArgs['t'];
